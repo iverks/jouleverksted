@@ -1,0 +1,35 @@
+[package]
+name = "jouleverksted"
+version = "0.1.0"
+authors = ["Iver Karlsbakk Småge stasj <iverks@stud.ntnu.no>"]
+edition = "2021"
+resolver = "2"
+
+[profile.release]
+opt-level = "s"
+
+[profile.dev]
+debug = true # Symbols are nice and they don't increase the size on Flash
+opt-level = "z"
+
+[features]
+default = ["experimental"]
+pio = ["esp-idf-sys/pio"]
+experimental = ["esp-idf-svc/experimental", "embedded-svc/experimental"]
+
+[dependencies]
+dotenv_codegen = "0.15.0"
+embedded-hal = "0.2.7"
+embedded-svc = "0.23.1"
+esp-idf-hal = "0.39.3"
+esp-idf-svc = "0.43.4"
+esp-idf-sys = { version = "0.31.11", features = ["binstart"] }
+http = "0.2.8"
+smart-leds = "0.3.0"
+smart-leds-trait = "0.2.1"
+ws2812-esp32-rmt-driver = "0.4.0"
+
+
+[build-dependencies]
+embuild = "0.30.4"
+anyhow = "1"

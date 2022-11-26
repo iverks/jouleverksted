@@ -16,3 +16,5 @@ Smart-led driver: <https://github.com/cat-in-136/ws2812-esp32-rmt-driver>
 Hardware abstraction layer: <https://github.com/esp-rs/esp-idf-hal>
 
 Installasjonsguide: <https://esp-rs.github.io/book/>
+
+Eksempelprosjekt som er forvirrende af: <https://github.com/ivmarkov/rust-esp32-std-demo>

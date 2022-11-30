@@ -1,0 +1,28 @@
+# unused but saved for later reference
+
+https://localhost:1948 {
+    respond /favicon.ico "Nope"
+    # respond "Hello rest"
+    reverse_proxy http://10.0.0.22:80 {
+        header_up -Cache-control
+        header_up -Accept
+        header_up -User-Agent
+        header_up -Accept-Language
+        header_up -Sec-Fetch-User
+        header_up -Upgrade-Insecure-Requests
+        header_up -Sec-Fetch-Site
+        header_up -Sec-Fetch-Mode
+        header_up -Cookie
+        header_up -Sec-Fetch-Dest
+        header_up -Accept-Encoding
+        
+    }
+    log {
+       level DEBUG
+       output file ./caddy_test.log {
+           roll_size 10MiB
+           roll_keep 10
+           roll_keep_for 336h
+       }
+    }
+}

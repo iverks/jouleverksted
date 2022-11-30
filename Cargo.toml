@@ -18,6 +18,7 @@ pio = ["esp-idf-sys/pio"]
 experimental = ["esp-idf-svc/experimental", "embedded-svc/experimental"]
 
 [dependencies]
+anyhow = "1"
 dotenv_codegen = "0.15.0"
 embedded-hal = "0.2.7"
 embedded-svc = "0.23.1"
@@ -25,6 +26,7 @@ esp-idf-hal = "0.39.3"
 esp-idf-svc = "0.43.4"
 esp-idf-sys = { version = "0.31.11", features = ["binstart"] }
 http = "0.2.8"
+log = "0.4.17"
 smart-leds = "0.3.0"
 smart-leds-trait = "0.2.1"
 ws2812-esp32-rmt-driver = "0.4.0"

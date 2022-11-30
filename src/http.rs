@@ -1,34 +1,91 @@
+use crate::message::CustomProgramValues;
+
+use super::message;
 // Wi-fi
 use embedded_svc::http::server::Method;
-use embedded_svc::io::Write;
+use embedded_svc::io::{Write, Read};
+use smart_leds::RGB8;
 use std::sync::mpsc;
 
-pub fn httpd(info_sender: mpsc::Sender<i32>) -> Result<esp_idf_svc::http::server::EspHttpServer, ()> {
-    let mut server = esp_idf_svc::http::server::EspHttpServer::new(&Default::default()).unwrap();
-    let info_sender_toggle = info_sender.clone();
+pub fn httpd(info_sender: mpsc::Sender<message::Message>) -> anyhow::Result<esp_idf_svc::http::server::EspHttpServer> {
+    let mut server = esp_idf_svc::http::server::EspHttpServer::new(&Default::default())?;
+    let info_sender_rotate = info_sender.clone();
+    let info_sender_program = info_sender.clone();
+    let info_sender_custom = info_sender.clone();
 
     server
         .fn_handler("/", Method::Get, |req| {
             req.into_ok_response()?
-                .write_all("Hello from Rust!".as_bytes()).unwrap();
+                .write_all("Hello from Rust!".as_bytes())?;
             Ok(())
-        }).unwrap()
-        .fn_handler("/toggle", Method::Get, move |req| {
-            // Tanker: Send informasjon vi får fra post request :)
-            // Lag en struct for det
-            match info_sender_toggle.send(1) {
+        })?
+        .fn_handler("/rotate", Method::Post, move |req| {
+            match info_sender_rotate.send(message::Message::Rotate) {
                 Ok(_ok) => { 
                     req.into_ok_response()?
-                        .write_all("Success! Set toggle message".as_bytes()).unwrap(); 
-                }
+                        .write_all("Success! Sent rotate message".as_bytes())?; 
+                },
                 Err(err) => {
                     req.into_response(500, Some("Internal error"), &[])?
-                        .write_all(format!("Error: {}", {err}).as_bytes()).unwrap();
+                        .write_all(format!("Error: {}", {err}).as_bytes())?;
                 }
             }
             Ok(())
-        })
-        .unwrap();
+        })?
+        .fn_handler("/program", Method::Post, move |mut req| {
+            let mut body: [u8; 100] = [0; 100];
+            let len_read = req.read(&mut body)?;
+            let body_str = String::from_utf8_lossy(& body[0..len_read]);
+            println!("Body: {}", body_str);
+            let program: i32 = match body_str.parse() {
+                Ok(num) => num,
+                Err(err) => { // If number cant be parsed respond with error
+                    req.into_response(400, Some("Bad input"), &[])?
+                        .write_all(format!("Invalid input: {}", {err}).as_bytes())?;
+                return Ok(());
+            }
+            };
+            match info_sender_program.send(message::Message::SetProgram(program)) {
+                Ok(_ok) => { 
+                    req.into_ok_response()?
+                        .write_all(&body)?; 
+                },
+                Err(err) => {
+                    req.into_response(500, Some("Internal error"), &[])?
+                        .write_all(format!("Error: {}", {err}).as_bytes())?;
+                }
+            }
+            Ok(())
+        })?
+        .fn_handler("/custom", Method::Post, move |mut req| {
+            let mut body: [u8; 13] = [0; 13]; // Let buffer be too long to detect bad inputs
+            let len_read = req.read(&mut body)?;
+            if len_read != 12 {
+                println!("Wrong length input");
+                req.into_response(400, Some("Bad input"), &[])?
+                .write_all(format!("Error: Bad input").as_bytes())?;
+                return Ok(());
+            }
+            let program = CustomProgramValues {
+                time_1_light_1: RGB8{r: body[0], g: body[1], b: body[2]},
+                time_1_light_2: RGB8{r: body[3], g: body[4], b: body[5]},
+                time_2_light_1: RGB8{r: body[6], g: body[7], b: body[8]},
+                time_2_light_2: RGB8{r: body[9], g: body[10], b: body[11]}
+            };
+            
+            match info_sender_custom.send(message::Message::CustomProgram(program)) {
+                Ok(_ok) => { 
+                    req.into_ok_response()?
+                        .write_all(&body)?; 
+                },
+                Err(err) => {
+                    req.into_response(500, Some("Internal error"), &[])?
+                        .write_all(format!("Error: {}", {err}).as_bytes())?;
+                }
+            }
+            Ok(())
+        })?;
+
 
     Ok(server)
 }

@@ -10,20 +10,34 @@ use std::sync::mpsc;
 pub fn httpd(info_sender: mpsc::Sender<message::Message>) -> anyhow::Result<esp_idf_svc::http::server::EspHttpServer> {
     let mut server = esp_idf_svc::http::server::EspHttpServer::new(&Default::default())?;
     let info_sender_rotate = info_sender.clone();
+    let info_sender_off = info_sender.clone();
     let info_sender_program = info_sender.clone();
     let info_sender_custom = info_sender.clone();
 
     server
         .fn_handler("/", Method::Get, |req| {
             req.into_ok_response()?
-                .write_all("Hello from Rust!".as_bytes())?;
+                .write_all("Lysa er oppe og nikker :)".as_bytes())?;
             Ok(())
         })?
-        .fn_handler("/rotate", Method::Post, move |req| {
+        .fn_handler("/rotate", Method::Get, move |req| {
             match info_sender_rotate.send(message::Message::Rotate) {
                 Ok(_ok) => { 
                     req.into_ok_response()?
-                        .write_all("Success! Sent rotate message".as_bytes())?; 
+                        .write_all("Knallbra, neste lysfarge kommer".as_bytes())?; 
+                },
+                Err(err) => {
+                    req.into_response(500, Some("Internal error"), &[])?
+                        .write_all(format!("Error: {}", {err}).as_bytes())?;
+                }
+            }
+            Ok(())
+        })?
+        .fn_handler("/off", Method::Get, move |req| {
+            match info_sender_off.send(message::Message::SetProgram(-2)) {
+                Ok(_ok) => { 
+                    req.into_ok_response()?
+                        .write_all("God natt :)".as_bytes())?; 
                 },
                 Err(err) => {
                     req.into_response(500, Some("Internal error"), &[])?
@@ -58,9 +72,9 @@ pub fn httpd(info_sender: mpsc::Sender<message::Message>) -> anyhow::Result<esp_
             Ok(())
         })?
         .fn_handler("/custom", Method::Post, move |mut req| {
-            let mut body: [u8; 13] = [0; 13]; // Let buffer be too long to detect bad inputs
+            let mut body: [u8; 14] = [0; 14]; // Let buffer be too long to detect bad inputs
             let len_read = req.read(&mut body)?;
-            if len_read != 12 {
+            if len_read != 13 {
                 println!("Wrong length input");
                 req.into_response(400, Some("Bad input"), &[])?
                 .write_all(format!("Error: Bad input").as_bytes())?;
@@ -70,7 +84,8 @@ pub fn httpd(info_sender: mpsc::Sender<message::Message>) -> anyhow::Result<esp_
                 time_1_light_1: RGB8{r: body[0], g: body[1], b: body[2]},
                 time_1_light_2: RGB8{r: body[3], g: body[4], b: body[5]},
                 time_2_light_1: RGB8{r: body[6], g: body[7], b: body[8]},
-                time_2_light_2: RGB8{r: body[9], g: body[10], b: body[11]}
+                time_2_light_2: RGB8{r: body[9], g: body[10], b: body[11]},
+                num_tenth_seconds_blink: body[12],
             };
             
             match info_sender_custom.send(message::Message::CustomProgram(program)) {

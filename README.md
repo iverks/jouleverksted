@@ -62,3 +62,9 @@ Installasjon ferdig.
 6. Kopier `.default.env` til `.env`, og skriv inn ditt wi-fi navn og passord.
 7. Gjør andre endringer om ønsket.
 8. Kompiler og flash automatisk med `cargo run`. Første gang vil det ta lang tid.
+
+## Bruker-"dokumentasjon"
+
+GET-"10.0.0.22/" for å sjekke at den lever. NB: vet ikke hvor stabil ipn er.
+GET-"/off" Skru av
+GET-"/rotate" Bytt til neste program i lista.

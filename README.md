@@ -36,18 +36,18 @@ Disse instruksjonene er per nå utestet, men jeg tror det var slik jeg gjorde de
 2. Last ned rust
    1. Last ned Visual Studio Build Tools om du ikke har de. <https://aka.ms/vs/17/release/vs_BuildTools.exe>
       1. Velg "Desktop Development with C++", (og under "Individual Components" huk av for "C++ Clang compiler" (usikker på om den siste er nødvendig))
-   2. Last ned rust (`rustup-init.exe` for 64 bit windows) fra [hjemmesiden](https://www.rust-lang.org/learn/get-started) eller bruk [direkte nedlastningslenke](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe). 
+   2. Last ned rust (`rustup-init.exe` for 64 bit windows) fra [hjemmesiden](https://www.rust-lang.org/learn/get-started) eller bruk [direkte nedlastningslenke](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe).
    3. Kjør sistnevnte program. Velg default instillinger.
    4. Se at det fungerer i terminalen `cargo --version`.
-3. USIKKER PÅ OM DETTE ER NØDVENDIG:
-   1. Legg `C:\Users\<BRUKERNAVN>\AppData\Local\Programs\Python\Python310` til PATH-variabelen din (dersom du har installert fra nettsiden og ikke windows store)
-   2. Manuelt last ned og installer python pakken pyxml eller noe sånt. Det er lett å finne guide på youtube. Bare gjør dette dersom noen av de neste stegene eller kompileringen klager på en manglende python-pakke. 
-   3. Jeg gjentar: dersom kompileringen får en error, vær obs på at det kan være en manglende python pakke som du må laste ned manuelt. Ikke fra pip.
+3. Konfigurer Python etter krav:
+   1. [Merk: Kan ha problemer med python > 3.10](https://github.com/cs01/gdbgui/issues/447)
+   2. Installer Python. Jeg anbefaler å installere fra nettsiden.
+   3. Kjør `py -c "import os, sys; print(os.path.dirname(sys.executable))"`.
+   4. Legg output fra forrige steg til PATH-variabelen din.
 4. Last ned _nightly_ toolchain for rust: `rustup toolchain add nightly`
-5. Last ned ldproxy: `cargo install ldproxy` 
-6. Last ned espflash: `cargo install espflash` (Usikker på om det er nødvendig)
-7. Last ned espup:
-   1. `cargo install espup`    
+5. Last ned ldproxy: `cargo install ldproxy`
+6. Last ned espup:
+   1. `cargo install espup`
    2. `espup install`
 
 Installasjon ferdig.

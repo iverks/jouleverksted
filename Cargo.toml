@@ -22,8 +22,10 @@ esp-idf-svc = "0.46.0"
 esp-idf-sys = { version = "0.33.1", features = ["binstart"] }
 http = "0.2.8"
 log = "0.4.17"
+minijinja = "1.0.4"
 smart-leds = "0.3.0"
 smart-leds-trait = "0.2.1"
+tokio = { version = "1.29.1", features = ["rt", "rt-multi-thread", "macros"] }
 ws2812-esp32-rmt-driver = "0.5.0"
 
 

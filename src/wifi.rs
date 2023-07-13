@@ -5,12 +5,10 @@ use embedded_svc::{
 use esp_idf_hal::peripheral;
 use esp_idf_svc::{
     eventloop::EspSystemEventLoop,
-    netif::EspNetif,
     nvs::{EspNvsPartition, NvsDefault},
     ping,
     wifi::{BlockingWifi, EspWifi},
 };
-use std::{net::Ipv4Addr, time::Duration};
 
 const SSID: &str = dotenv!("RUST_ESP32_STD_DEMO_WIFI_SSID");
 const PASS: &str = dotenv!("RUST_ESP32_STD_DEMO_WIFI_PASS");
